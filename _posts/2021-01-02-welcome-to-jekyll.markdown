@@ -1,29 +1,58 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "Static blog setup"
 date:   2021-01-02 23:23:41 -0600
-categories: jekyll update
+categories: jekyll
 ---
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
 
-Jekyll requires blog post files to be named according to the following format:
+As my email is bound to this domain, I decided to put at least some
+content up, as not to keep the page completely blank.
 
-`YEAR-MONTH-DAY-title.MARKUP`
+Setup is quite simple, on my own machine I use [Jekyll
+container][jekyll-container] as per their
+[documentation][jekyll-container-docs].
 
-Where `YEAR` is a four-digit number, `MONTH` and `DAY` are both two-digit numbers, and `MARKUP` is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.
+I switched the version to 4.1.0 though (4.2.0 which is the latest one
+did not work).
 
-Jekyll also offers powerful support for code snippets:
+The blog itself was initialized by running:
+```
+docker run --rm \
+  --volume="$PWD:/srv/jekyll"  \
+  -it jekyll/builder:4.1.0 \
+  jekyll new pow.lt
+```
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
-{% endhighlight %}
+and then
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+```
+cd pow.lt
+docker run --rm \
+  --volume="$PWD:/srv/jekyll"  \
+  -it jekyll/builder:4.1.0 \
+  jekyll build
+```
 
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+so `Gemfile.lock` would get populated.
+
+Once I had that down, I had to figure out the GCS stuff, which I did
+following [Jekyll on GCS tutorial][jekyll-gcs-tutorial]. It's quite
+outdated, as it's from 2015, but pointed me in the right direction.
+
+Once I had the manual publishing going, I pushed the blog to [personal
+github repo][pow-github-repo] and started working out the automated
+publishing.
+
+I decided to use github actions, so followed [a tutorial on how to
+upload to gcs from a github action][gcs-github-action] and [docs from
+a Jekyll action that can build, but not
+publish][jekyll-build-action].
+
+And here we are...
+
+[jekyll-container]: https://hub.docker.com/r/jekyll/jekyll/
+[jekyll-container-docs]: https://github.com/envygeeks/jekyll-docker/blob/master/README.md
+[jekyll-gcs-tutorial]: https://jen.run/blog/2015/07/jekyll-google-cloud-storage.html
+[pow-github-repo]: https://github.com/ignas/pow.lt
+[gcs-github-action]: https://sha.ws/automatic-upload-to-google-cloud-storage-with-github-actions.html
+[jekyll-build-action]: https://github.com/marketplace/actions/jekyll-action
