@@ -2,7 +2,7 @@ name: Build and deploy Jekyll site to GCS
 on:
   push:
     branches:
-    - master
+    - main
 
 env:
   GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
